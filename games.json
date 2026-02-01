@@ -4,6 +4,11 @@
             "title": "Placeholder Game",
             "folder": "placeholder",
             "description": "A test placeholder to verify the site works"
+        },
+        {
+            "title": "Escalation",
+            "folder": "escalation",
+            "description": ""
         }
     ]
 }
