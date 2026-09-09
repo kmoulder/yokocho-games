@@ -5,6 +5,7 @@ class GameArcade {
         this.games = [];
         this.currentIndex = -1; // -1 means welcome screen
         this.isLoading = false;
+        this.navigationRevision = 0;
 
         this.gameFrame = document.getElementById('game-frame');
         this.gameTitle = document.querySelector('.game-title');
@@ -20,11 +21,12 @@ class GameArcade {
         this.renderIndicators();
         this.bindEvents();
         this.updateNavButtons();
+        await this.goToGame(this.indexFromURL(), { historyMode: 'replace' });
     }
 
     async loadGamesList() {
         try {
-            const response = await fetch('games.json');
+            const response = await fetch('/games.json');
             const data = await response.json();
             this.games = data.games || [];
         } catch (error) {
@@ -37,7 +39,9 @@ class GameArcade {
         this.indicators.innerHTML = '';
 
         // Welcome dot
-        const welcomeDot = document.createElement('div');
+        const welcomeDot = document.createElement('a');
+        welcomeDot.href = '/';
+        welcomeDot.setAttribute('aria-label', 'Welcome');
         welcomeDot.className = 'indicator-dot active';
         welcomeDot.dataset.index = -1;
         welcomeDot.title = 'Welcome';
@@ -45,7 +49,9 @@ class GameArcade {
 
         // Game dots
         this.games.forEach((game, index) => {
-            const dot = document.createElement('div');
+            const dot = document.createElement('a');
+            dot.href = this.gameURL(index);
+            dot.setAttribute('aria-label', game.title);
             dot.className = 'indicator-dot';
             dot.dataset.index = index;
             dot.title = game.title;
@@ -54,6 +60,7 @@ class GameArcade {
     }
 
     bindEvents() {
+        window.addEventListener('popstate', () => this.goToGame(this.indexFromURL(), { historyMode: null }));
         // Arrow buttons
         this.prevBtn.addEventListener('click', () => this.navigate(-1));
         this.nextBtn.addEventListener('click', () => this.navigate(1));
@@ -71,7 +78,9 @@ class GameArcade {
 
         // Indicator dots
         this.indicators.addEventListener('click', (e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
             if (e.target.classList.contains('indicator-dot')) {
+                e.preventDefault();
                 const index = parseInt(e.target.dataset.index);
                 this.goToGame(index);
             }
@@ -89,15 +98,30 @@ class GameArcade {
         this.goToGame(newIndex);
     }
 
-    async goToGame(index) {
-        if (this.isLoading || index === this.currentIndex) return;
+    gameURL(index) {
+        return index < 0 ? '/' : `/${this.games[index].slug || this.games[index].folder}/`;
+    }
+
+    indexFromURL() {
+        const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+        return this.games.findIndex((game, index) => this.gameURL(index).replace(/\/$/, '') === path);
+    }
+
+    async goToGame(index, { historyMode = 'push' } = {}) {
         if (index < -1 || index >= this.games.length) return;
+        const revision = ++this.navigationRevision;
+        if (index === this.currentIndex) {
+            this.isLoading = false;
+            this.gameFrame.classList.remove('fade-in', 'fade-out');
+            return;
+        }
 
         this.isLoading = true;
 
         // Fade out
         this.gameFrame.classList.add('fade-out');
         await this.wait(200);
+        if (revision !== this.navigationRevision) return;
 
         // Update current index
         this.currentIndex = index;
@@ -113,11 +137,13 @@ class GameArcade {
         this.updateIndicators();
         this.updateNavButtons();
         this.updateTitle();
+        if (historyMode) history[historyMode === 'replace' ? 'replaceState' : 'pushState']({ game: index }, '', this.gameURL(index));
 
         // Fade in
         this.gameFrame.classList.remove('fade-out');
         this.gameFrame.classList.add('fade-in');
         await this.wait(200);
+        if (revision !== this.navigationRevision) return;
         this.gameFrame.classList.remove('fade-in');
 
         this.isLoading = false;
@@ -140,7 +166,7 @@ class GameArcade {
         const iframe = document.createElement('iframe');
         // Use custom entry point if specified, otherwise try index.html
         const entryPoint = game.entry || 'index.html';
-        iframe.src = `games/${game.folder}/${entryPoint}`;
+        iframe.src = `/games/${game.folder}/${entryPoint}`;
         iframe.allow = 'fullscreen; autoplay';
         iframe.title = game.title;
 
@@ -162,6 +188,7 @@ class GameArcade {
     }
 
     updateTitle() {
+        document.title = this.currentIndex < 0 ? 'Yokocho Games' : `${this.games[this.currentIndex].title} · Yokocho Games`;
         if (this.currentIndex === -1) {
             this.gameTitle.textContent = 'Welcome to Yokocho';
         } else {

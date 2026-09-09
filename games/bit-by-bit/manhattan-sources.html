@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bit by Bit · Manhattan data sources</title>
+  <style>
+    :root{color-scheme:dark;--ink:#edf3e5;--muted:#b6c6bd;--bg:#183e3b;--card:#244f4b;--link:#c8e19c}body{max-width:760px;margin:0 auto;padding:48px 24px;font:16px/1.65 system-ui,sans-serif;color:var(--ink);background:linear-gradient(145deg,#385e63,var(--bg));}h1{line-height:1.1;font-weight:650}h2{margin-top:2em;color:#d7e8b1}p,li{color:var(--muted)}a{color:var(--link)}small{color:#c8d7c8}
+  </style>
+</head>
+<body>
+  <p><a href="./">← Bit by Bit</a></p>
+  <h1>Manhattan data sources</h1>
+  <p>Bit by Bit uses a compact, simplified geographic extract for a playful roll-up route from Conservatory Water across Manhattan. Source geometry is adapted for readable, rollable gameplay.</p>
+  <h2>NYC datasets</h2>
+  <ul>
+    <li><a href="https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/NYC_Borough_Boundary/FeatureServer/0">NYC Borough Boundary</a> — shoreline boundary from NYC Department of City Planning.</li>
+    <li><a href="https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/Centerline_view/FeatureServer">Centerline_view</a> — NYC Citywide Street Centerline, including Central Park paths.</li>
+    <li><a href="https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/BUILDING_view/FeatureServer">BUILDING_view</a> — NYC building footprints and roof-height data.</li>
+    <li><a href="https://services1.arcgis.com/8cuieNI8NbqQZQVJ/ArcGIS/rest/services/NYC_Parks_Properties_view/FeatureServer/0">NYC Parks Properties</a> — park property polygons and names.</li>
+    <li><a href="https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/Hydrography_2022/FeatureServer">Hydrography 2022</a> — NYC planimetric water geometry.</li>
+  </ul>
+  <h2>Landmark coordinates</h2>
+  <p>Landmark positions were checked against the current <a href="https://api.openstreetmap.org/api/0.6/map?bbox=-73.970,40.772,-73.960,40.778">OpenStreetMap Central Park extract</a>. The project also references the <a href="https://www.nyc.gov/assets/lpc/downloads/pdf/presentation-materials/20260623/Central-Park-Kerbs-Memorial-Boathouse.pdf">NYC Landmarks Preservation Commission Kerbs Memorial Boathouse material</a>. George Washington Bridge anchors use public map positions for the Manhattan and Fort Lee towers.</p>
+  <h2>OpenStreetMap attribution</h2>
+  <p>Where OpenStreetMap data contributes landmark checking or coordinates, attribution follows the <a href="https://www.openstreetmap.org/copyright">OpenStreetMap copyright and attribution page</a>. OSM data is available under the <a href="https://opendatacommons.org/licenses/odbl/">Open Database License</a>.</p>
+  <h2>Gameplay limits</h2>
+  <p>Buildings are rendered as oriented footprint massing with available heights. Roads and shoreline use simplified source geometry. Terrain is flattened for play, and props or landmarks may be authored for scale and readability. The extract is not a survey, navigation map, or promise of exact slopes, elevations, or every island feature.</p>
+  <p><small>See <a href="./docs/manhattan-data.md">the data notes</a> for the coordinate contract, rebuild command, extract counts, and known source limitations.</small></p>
+</body>
+</html>

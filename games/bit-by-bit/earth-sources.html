@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bit by Bit · Earth data sources</title>
+  <style>
+    :root{color-scheme:dark;--ink:#edf3e5;--muted:#b6c6bd;--bg:#183e3b;--card:#244f4b;--link:#c8e19c}body{max-width:760px;margin:0 auto;padding:48px 24px;font:16px/1.65 system-ui,sans-serif;color:var(--ink);background:linear-gradient(145deg,#385e63,var(--bg));}h1{line-height:1.1;font-weight:650}h2{margin-top:2em;color:#d7e8b1}p,li{color:var(--muted)}a{color:var(--link)}small{color:#c8d7c8}
+  </style>
+</head>
+<body>
+  <p><a href="./">← Bit by Bit</a></p>
+  <h1>Earth data sources</h1>
+  <p>Bit by Bit uses a compact, simplified world extract for the roll-up from Manhattan through nearby regions and across the continents. Source geometry is adapted for readable, continuous gameplay.</p>
+  <h2>Natural Earth datasets</h2>
+  <ul>
+    <li><a href="https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_admin_0_countries.geojson">110m countries</a> — coarse country and island polygons for the global atlas.</li>
+    <li><a href="https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_admin_1_states_provinces.geojson">10m states and provinces</a> — detailed regional outlines for New Jersey, Pennsylvania, Delaware, Connecticut, Rhode Island, Massachusetts, mainland New York, and Long Island.</li>
+    <li><a href="https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_lakes.geojson">110m lakes</a> — representative major inland-water polygons.</li>
+    <li><a href="https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_populated_places.geojson">110m populated places</a> — Natural Earth world-city points used for the city progression.</li>
+  </ul>
+  <p>Natural Earth describes these datasets as public-domain map data. See its <a href="https://www.naturalearthdata.com/downloads/">download page</a> for source information and terms.</p>
+  <h2>New York geometry</h2>
+  <p>The metro rings use the <a href="https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/NYC_Borough_Boundary/FeatureServer/0">NYC Borough Boundary FeatureServer</a>, including the five boroughs and substantial satellite islands.</p>
+  <p>Brooklyn, Queens, the Bronx, and Staten Island also use roughly 100,000 building records from the <a href="https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/BUILDING_view/FeatureServer/0">NYC Building Footprints service</a>. Buildings use simplified oriented footprint bounds and source roof heights, converted from feet to metres (6 m when missing). The extract keeps tall buildings, large footprints, named buildings, and a deterministic sample of smaller buildings. It represents actual locations and massing, with simplified roofs and facades. It does not include every building.</p>
+  <h2>Projection and limits</h2>
+  <p>NYC and regional rings use metres around <code>[-73.9665, 40.7740]</code>, with longitude scaled by <code>111320 · cos(origin latitude)</code> and latitude by <code>111320</code>. Geographic country, lake, and city records remain WGS84 longitude/latitude but are rendered on that same equirectangular flat atlas so the roll-up stays continuous. The flat atlas is intentionally stylized and becomes increasingly distorted at global scale. The final globe is a separate visual treatment.</p>
+  <p>The generated snapshot contains 41 regions, 176 country land entries, 24 lakes, and 72 cities in about 0.59 MiB. It is intended for game silhouettes and landmarks rather than surveying, navigation, or coast-by-coast detail.</p>
+  <p><small>This map is generated from a bundled snapshot. Playing does not request live geographic data.</small></p>
+</body>
+</html>
