@@ -39,6 +39,16 @@ Centerlines omit source `RW_TYPE=14` ferry-route geometries and `STATUS=5` demap
 
 The OTI hydrography record centered at approximately `40.77418, -73.96747` is the Conservatory Water pond. Its source `NAME` is `BOAT BASIN`, a known source attribution issue; the builder identifies this feature by its source geometry and renames it `Conservatory Water` in the output. The baked ring has 62 points and local bounds `x=-100.4..-6.1`, `z=-90.1..39.5` metres. No hand-drawn replacement polygon is used.
 
-## Known source limitations
+## Detailed Conservatory Water surroundings
+
+`src/data/conservatory.json` adds 197 clipped pedestrian-path runs and 186 point placements (107 trees, 79 benches) within 300 m of the pond. Of the point placements, 80 are mapped OSM points and 106 are approximate plan traces. The same extract is published at `public/data/conservatory.json`, including source identifiers and ODbL attribution. Rebuild with `python scripts/build-conservatory.py`, or add `--cached` to reuse `artifacts/conservatory-osm.osm`.
+
+The plan reference is the Central Park Conservancy's June 2026 LPC submission, **PDF page 84 / sheet 82, Basin – Existing Plan**. `src/data/conservatory-plan-traces.json` retains manually traced bench-run endpoints, visible tree centers, and three geographic registration anchors (Kerbs Boathouse, Alice in Wonderland, and Hans Christian Andersen). Registration, individual bench spacing within a run, and tree dimensions are approximate. One trace conflicting with the existing hydrography is omitted rather than shifted to an invented location. Proposed-plan features are excluded. Neither this extract nor the public NYC tree map provides an exhaustive current inventory of Central Park trees.
+
+Random trees, benches, and food carts are suppressed inside the detailed area. Outside that area the existing representative scatter remains. Leaf trails along mapped paths are gameplay additions, separately marked `source: gameplay`; they are not surveyed litter. Mapped tree trunks have narrow collision footprints while their canopies remain collectible when the player is large enough. Legacy procedural prop IDs are retained for unaffected objects so old saves do not accidentally collect different props.
+
+## Manhattan growth pacing
+
+At 75 m and above, buildings award 20% of their previous growth. Land requires 1.8 km growth before it becomes collectible. Dense collisions are limited to 90 individual building captures and two land pieces per second, with small burst allowances; uncaptured objects remain available. Movement speed is unchanged, and chapter transitions still depend solely on size. These limits prevent a single oversized collision from clearing whole neighborhoods in one frame. `node scripts/simulate-manhattan-pacing.mjs 1 1 8 0 --dash` exercises the real movement/collision/size-progression code from neighborhood scale through Greater New York.
 
 The NYC building service includes duplicate BINs for physically separate condominium or split footprints; `OBJECTID` is used only as a fallback ID when BIN is missing. Features with a missing or zero roof height receive a conservative 6 m gameplay height. The NYC shoreline is a mean-high-tide borough boundary rather than a historic natural shoreline, and the largest-ring selection intentionally omits satellite islands. Landmark points are curated public map positions with visual mass heights for gameplay; they are not substituted for building footprints.
