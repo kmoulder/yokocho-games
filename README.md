@@ -3,8 +3,10 @@
 The arcade is served by GitHub Pages from the root of `master`, with the custom domain `yokocho.games`.
 
 - `/` opens the welcome screen.
-- `/escalation/` opens Escalation.
 - `/bit-by-bit/` opens Bit by Bit.
+- `/escalation/` opens Escalation.
+
+The browsing order is Welcome → Bit by Bit → Escalation. Games fill the browser viewport automatically, including on direct links and mobile. The floating Games button opens navigation over the game; Escape closes that menu. This layout does not require the browser's native fullscreen permission.
 
 Each route has its own static `index.html`, so direct links and reloads work on GitHub Pages. Arcade navigation uses browser history; Back and Forward restore the selected game. The indicator dots are ordinary links that can be copied or opened in a new tab.
 

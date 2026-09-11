@@ -1,18 +1,18 @@
 {
     "games": [
         {
-            "title": "Escalation",
-            "folder": "escalation",
-            "entry": "Escalation.html",
-            "description": "A game of escalation.",
-            "slug": "escalation"
-        },
-        {
             "title": "Bit by Bit",
             "folder": "bit-by-bit",
             "entry": "index.html",
             "description": "An unhurried roll-up journey from a first vibration to galaxies and the cosmic web.",
             "slug": "bit-by-bit"
+        },
+        {
+            "title": "Escalation",
+            "folder": "escalation",
+            "entry": "Escalation.html",
+            "description": "A game of escalation.",
+            "slug": "escalation"
         }
     ]
 }
