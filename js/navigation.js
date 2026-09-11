@@ -12,7 +12,6 @@ class GameArcade {
         this.indicators = document.getElementById('game-indicators');
         this.prevBtn = document.querySelector('.nav-prev');
         this.nextBtn = document.querySelector('.nav-next');
-        this.menuToggle = document.querySelector('.game-menu-toggle');
 
         this.init();
     }
@@ -61,7 +60,6 @@ class GameArcade {
     }
 
     bindEvents() {
-        this.menuToggle.addEventListener('click', () => this.setMenuOpen(!document.body.classList.contains('menu-open')));
         window.addEventListener('popstate', () => this.goToGame(this.indexFromURL(), { historyMode: null }));
         // Arrow buttons
         this.prevBtn.addEventListener('click', () => this.navigate(-1));
@@ -69,11 +67,6 @@ class GameArcade {
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.body.classList.contains('menu-open')) {
-                this.setMenuOpen(false);
-                this.menuToggle.focus();
-                return;
-            }
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 this.navigate(-1);
@@ -116,9 +109,6 @@ class GameArcade {
 
     async goToGame(index, { historyMode = 'push' } = {}) {
         if (index < -1 || index >= this.games.length) return;
-        const fromMenu = document.body.classList.contains('menu-open');
-        this.setMenuOpen(false);
-        if (fromMenu) this.menuToggle.focus();
         const revision = ++this.navigationRevision;
         if (index === this.currentIndex) {
             this.isLoading = false;
@@ -158,15 +148,6 @@ class GameArcade {
         this.gameFrame.classList.remove('fade-in');
 
         this.isLoading = false;
-        if (index === -1 && fromMenu) this.nextBtn.focus();
-    }
-
-    setMenuOpen(open) {
-        document.body.classList.toggle('menu-open', open);
-        this.menuToggle.setAttribute('aria-expanded', String(open));
-        this.menuToggle.setAttribute('aria-label', open ? 'Close games menu' : 'Open games menu');
-        const iframe = this.gameFrame.querySelector('iframe');
-        if (iframe) iframe.inert = open;
     }
 
     showWelcome() {

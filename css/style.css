@@ -124,9 +124,9 @@ body {
 }
 
 /* Welcome screen */
-.game-menu-toggle { display: none; }
 
-/* Games occupy the whole browser viewport; navigation opens over the game. */
+
+/* Games occupy the whole browser viewport. */
 .game-active .arcade-container {
     width: 100%;
     height: 100dvh;
@@ -138,53 +138,7 @@ body {
 .game-active .game-frame { border-radius: 0; box-shadow: none; }
 .game-active .game-frame iframe { display: block; }
 .game-active .game-header, .game-active .game-footer { display: none; }
-.game-active .game-menu-toggle {
-    display: block;
-    position: fixed;
-    top: 50%;
-    right: max(8px, env(safe-area-inset-right));
-    transform: translateY(-50%);
-    z-index: 3;
-    padding: 8px 7px;
-    min-height: 44px;
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 9px;
-    background: #292b36;
-    color: white;
-    font: 600 12px 'Segoe UI', sans-serif;
-    cursor: pointer;
-}
-.game-active.menu-open .game-header, .game-active.menu-open .game-footer {
-    display: flex;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(460px, calc(100% - 24px));
-    z-index: 2;
-    background: var(--bg-warm);
-    box-shadow: 0 4px 20px var(--shadow-medium);
-}
-.game-active.menu-open .game-header { top: calc(48px + env(safe-area-inset-top)); }
-.game-active.menu-open .game-footer { top: calc(126px + env(safe-area-inset-top)); border-radius: 12px; }
-.game-active .game-indicators { gap: 8px; flex-wrap: wrap; justify-content: center; }
-.game-active .indicator-dot {
-    width: auto;
-    height: auto;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 8px;
-    opacity: 1;
-    background: white;
-    color: var(--text-dark);
-    text-decoration: none;
-    font-size: 13px;
-    transform: none;
-}
-.game-active .indicator-dot::after { content: attr(title); }
-.game-active .indicator-dot.active { background: var(--accent-coral); transform: none; }
-.game-menu-toggle:focus-visible, .indicator-dot:focus-visible { outline: 3px solid var(--accent-sky); outline-offset: 3px; }
+.indicator-dot:focus-visible { outline: 3px solid var(--accent-sky); outline-offset: 3px; }
 
 .welcome-screen {
     width: 100%;
