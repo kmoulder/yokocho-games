@@ -16,7 +16,7 @@ class GameArcade {
         this.playing = false;
         this.hasSettled = false;
         this.settleTimer = null;
-        this.wheelTimer = null;
+        this.lastWheelTime = -Infinity;
         this.wheelLocked = false;
         this.wheelDelta = 0;
 
@@ -29,6 +29,8 @@ class GameArcade {
         this.nextBtn = document.querySelector('.nav-next');
         this.exitBtn = document.getElementById('exit-play');
         this.themeColor = document.querySelector('meta[name="theme-color"]');
+        this.grid = document.getElementById('profile-grid');
+        this.toast = document.getElementById('toast');
 
         this.init();
     }
@@ -36,6 +38,7 @@ class GameArcade {
     async init() {
         await this.loadGamesList();
         this.renderSlides();
+        this.renderProfile();
         this.renderIndicators();
         this.bindEvents();
         this.scrollToIndex(this.indexFromURL(), { smooth: false });
@@ -67,6 +70,7 @@ class GameArcade {
                 <div class="slide-cover"><span class="cover-title"></span></div>
                 <div class="slide-overlay">
                     <div class="slide-caption">
+                        <span class="caption-handle">@yokocho.games</span>
                         <h2></h2>
                         <p></p>
                         <button class="play-btn" type="button">
@@ -82,16 +86,73 @@ class GameArcade {
             slide.querySelector('.slide-caption h2').textContent = game.title;
             slide.querySelector('.slide-caption p').textContent = game.description || '';
             slide.querySelector('.play-btn').setAttribute('aria-label', `Play ${game.title}`);
-            if (game.icon) {
-                const icon = document.createElement('img');
-                icon.src = this.gameAsset(game, game.icon);
-                icon.alt = '';
-                slide.querySelector('.slide-cover').prepend(icon);
-            }
+            const cover = slide.querySelector('.slide-cover');
+            if (game.icon) cover.prepend(this.gameImage(game, game.icon, 'cover-icon'));
+            if (game.poster) cover.prepend(this.gameImage(game, game.poster, 'cover-poster'));
 
             this.feed.appendChild(slide);
             this.slides.push(slide);
         });
+    }
+
+    // Profile-style home: game count plus a grid of tiles that jump to each game
+    renderProfile() {
+        document.getElementById('stat-games').textContent = this.games.length;
+        this.grid.innerHTML = '';
+
+        this.games.forEach((game, index) => {
+            const tile = document.createElement('a');
+            tile.className = 'grid-tile';
+            tile.href = this.gameURL(index);
+            tile.dataset.index = index;
+            if (game.color) tile.style.setProperty('--slide-bg', game.color);
+
+            if (game.poster) tile.appendChild(this.gameImage(game, game.poster));
+            else if (game.icon) tile.appendChild(this.gameImage(game, game.icon, 'tile-icon'));
+
+            const label = document.createElement('span');
+            label.className = 'tile-label';
+            label.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>';
+            label.append(game.title);
+            tile.appendChild(label);
+
+            this.grid.appendChild(tile);
+        });
+    }
+
+    gameImage(game, file, className = '') {
+        const img = document.createElement('img');
+        img.src = this.gameAsset(game, file);
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        if (className) img.className = className;
+        return img;
+    }
+
+    async share() {
+        const url = location.origin + '/';
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Yokocho Games', text: 'A cozy collection of games', url });
+            } catch (error) {
+                // Closing the share sheet rejects; nothing to do
+            }
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(url);
+            this.showToast('Link copied');
+        } catch (error) {
+            this.showToast(url);
+        }
+    }
+
+    showToast(message) {
+        this.toast.textContent = message;
+        this.toast.classList.add('show');
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => this.toast.classList.remove('show'), 1800);
     }
 
     renderIndicators() {
@@ -134,6 +195,16 @@ class GameArcade {
         this.feed.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
 
         this.exitBtn.addEventListener('click', () => this.setPlaying(false));
+        document.querySelector('.start-btn').addEventListener('click', () => this.scrollToIndex(0));
+        document.querySelector('.share-btn').addEventListener('click', () => this.share());
+
+        // Grid tiles are real links (new tab, copy) but scroll the feed on a plain click
+        this.grid.addEventListener('click', (e) => {
+            const tile = e.target.closest('.grid-tile');
+            if (!tile || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            this.scrollToIndex(Number(tile.dataset.index));
+        });
         this.prevBtn.addEventListener('click', () => this.navigate(-1));
         this.nextBtn.addEventListener('click', () => this.navigate(1));
 
@@ -179,14 +250,22 @@ class GameArcade {
 
     onWheel(e) {
         if (this.playing || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+
+        // Let a long home grid scroll on its own before the feed moves
+        const inner = e.target.closest('.profile');
+        if (inner && (e.deltaY > 0
+            ? inner.scrollTop + inner.clientHeight < inner.scrollHeight - 1
+            : inner.scrollTop > 0)) return;
+
         e.preventDefault();
 
-        // Trackpad momentum keeps firing events; wait for a pause before the next move
-        clearTimeout(this.wheelTimer);
-        this.wheelTimer = setTimeout(() => {
+        // Trackpad momentum keeps firing events; a pause marks the next gesture.
+        // Event timestamps stay accurate even when a booting game stalls the page.
+        if (e.timeStamp - this.lastWheelTime > 300) {
             this.wheelLocked = false;
             this.wheelDelta = 0;
-        }, 300);
+        }
+        this.lastWheelTime = e.timeStamp;
         if (this.wheelLocked) return;
 
         this.wheelDelta += e.deltaY;
@@ -216,6 +295,7 @@ class GameArcade {
         if (index === this.currentIndex) return;
         this.currentIndex = index;
         this.slides.forEach(slide => slide.classList.toggle('active', Number(slide.dataset.index) === index));
+        document.body.classList.toggle('on-welcome', index < 0);
         this.updateIndicators();
         this.updateNavButtons();
         this.updateTitle();
@@ -330,7 +410,7 @@ class GameArcade {
     updateTitle() {
         const game = this.games[this.currentIndex];
         document.title = game ? `${game.title} · Yokocho Games` : 'Yokocho Games';
-        if (this.themeColor) this.themeColor.content = game ? (game.color || '#10111b') : '#FAF8F5';
+        if (this.themeColor) this.themeColor.content = game ? (game.color || '#10111b') : '#0f0f14';
     }
 }
 

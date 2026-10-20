@@ -7,6 +7,7 @@
             "description": "An unhurried roll-up journey from a first vibration to galaxies and the cosmic web.",
             "slug": "bit-by-bit",
             "icon": "favicon.svg",
+            "poster": "poster.jpg",
             "color": "#10111b"
         },
         {
@@ -16,7 +17,17 @@
             "description": "A game of escalation.",
             "slug": "escalation",
             "icon": "Escalation.icon.png",
+            "poster": "poster.jpg",
             "color": "#000000"
+        },
+        {
+            "title": "Cart Gauntlet",
+            "folder": "cart-gauntlet",
+            "entry": "index.html",
+            "description": "Every mine cart, skull cart and rocket barrel stage from the Donkey Kong Country trilogy, back to back, in a homemade SNES emulator. Bring your own ROMs.",
+            "slug": "cart-gauntlet",
+            "icon": "icon.svg",
+            "color": "#140a04"
         }
     ]
 }

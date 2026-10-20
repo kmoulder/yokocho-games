@@ -1,0 +1,10 @@
+{
+  "name": "Cart Gauntlet",
+  "short_name": "Cart Gauntlet",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#140a04",
+  "theme_color": "#140a04",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

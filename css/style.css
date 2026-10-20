@@ -4,6 +4,8 @@
     --bg-cream: #FAF8F5;
     --bg-warm: #F5F0E8;
     --bg-night: #10111b;
+    --bg-profile: #0f0f14;
+    --text-muted: rgba(255, 255, 255, 0.6);
     --text-dark: #3D3D3D;
     --text-soft: #6B6B6B;
     --accent-coral: #E8A598;
@@ -60,42 +62,228 @@ body {
     scroll-snap-stop: always;
 }
 
-/* Welcome slide */
+/* Welcome slide: a short-video style profile page */
 .welcome-slide {
+    background: var(--bg-profile);
+    color: white;
+}
+
+.profile {
+    height: 100%;
+    max-width: 560px;
+    margin: 0 auto;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    padding-top: env(safe-area-inset-top);
+    /* Many games can outgrow the screen; the grid scrolls before the feed does */
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.profile::-webkit-scrollbar { display: none; }
+
+.profile-bar {
+    display: flex;
     justify-content: center;
-    background: linear-gradient(160deg, var(--bg-warm) 0%, var(--bg-cream) 100%);
-    text-align: center;
+    padding: 14px 16px 6px;
 }
 
-.welcome-content {
-    padding: 40px 24px;
+.profile-handle {
+    font-weight: 700;
+    font-size: 1.05rem;
 }
 
-.welcome-content h1 {
-    font-size: clamp(2rem, 9vw, 2.75rem);
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 12px;
-}
-
-.welcome-content p {
-    font-size: 1.1rem;
-    color: var(--text-soft);
-}
-
-.swipe-hint {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(32px + env(safe-area-inset-bottom));
+.profile-head {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    color: var(--text-soft);
+    text-align: center;
+    padding: 10px 24px 0;
+}
+
+/* Story-style gradient ring in the brand accents */
+.avatar-ring {
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, var(--accent-coral), #ffcf8a, var(--accent-lavender), var(--accent-sky), var(--accent-coral));
+}
+
+.avatar {
+    width: 92px;
+    height: 92px;
+    display: grid;
+    place-items: center;
+    border: 3px solid var(--bg-profile);
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #3a2333 0%, #1a1420 100%);
+}
+
+.profile-name {
+    margin-top: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 14px;
+}
+
+.profile-stats div {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    min-width: 56px;
+}
+
+.profile-stats dd {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.profile-stats dt {
+    margin-top: 2px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.profile-bio {
+    margin-top: 14px;
     font-size: 0.95rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.profile-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.start-btn,
+.share-btn {
+    min-height: 44px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font: 600 1rem/1 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+    cursor: pointer;
+    transition: transform var(--transition-smooth), background var(--transition-smooth);
+}
+
+.start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 30px;
+    background: var(--accent-coral);
+}
+
+.share-btn {
+    width: 44px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.start-btn:hover { transform: scale(1.03); }
+.share-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+.profile-tabs {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.profile-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 28px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid white;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Edge-to-edge 3-column grid, like a profile's posts */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.grid-tile {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--slide-bg, #1d1d26);
+    color: white;
+    text-decoration: none;
+}
+
+.grid-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 0%;
+    transition: transform 0.4s ease;
+}
+
+.grid-tile img.tile-icon {
+    width: 44%;
+    height: auto;
+    margin: 26% auto 0;
+    display: block;
+    border-radius: 22%;
+}
+
+.grid-tile:hover img { transform: scale(1.04); }
+
+.grid-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 45%);
+}
+
+.tile-label {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 6px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tile-label svg { flex: none; }
+
+.grid-tile:focus-visible {
+    outline: 3px solid var(--accent-sky);
+    outline-offset: -3px;
+}
+
+.swipe-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    padding: 12px 0 calc(16px + env(safe-area-inset-bottom));
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 .swipe-hint .chevron {
@@ -105,7 +293,7 @@ body {
 
 @keyframes nudge {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(-6px); }
 }
 
 .hint-pointer { display: none; }
@@ -113,6 +301,38 @@ body {
 @media (hover: hover) and (pointer: fine) {
     .hint-touch { display: none; }
     .hint-pointer { display: inline; }
+}
+
+/* Short phones: tighten the header so the grid still shows */
+@media (max-height: 600px) {
+    .avatar { width: 72px; height: 72px; }
+    .avatar svg { width: 44px; height: 44px; }
+    .profile-bio { display: none; }
+    .profile-tabs { margin-top: 14px; }
+}
+
+/* Brief confirmation, e.g. after copying a link */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(32px + env(safe-area-inset-bottom));
+    z-index: 4;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 /* Game slides */
@@ -146,7 +366,20 @@ body {
     transition: opacity 0.4s ease;
 }
 
-.slide-cover img {
+/* Title-screen screenshot behind the loading spinner, so the swap to live is seamless */
+.cover-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 0%;
+    filter: brightness(0.5);
+}
+
+.slide-cover > :not(.cover-poster) { position: relative; }
+
+.cover-icon {
     width: 96px;
     height: 96px;
     border-radius: 24px;
@@ -167,6 +400,7 @@ body {
 
 .game-slide.loading .slide-cover::after {
     content: '';
+    position: relative;
     width: 32px;
     height: 32px;
     border: 3px solid rgba(255, 255, 255, 0.2);
@@ -196,6 +430,13 @@ body {
     bottom: calc(28px + env(safe-area-inset-bottom));
     pointer-events: none;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.caption-handle {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .slide-caption h2 {
@@ -278,6 +519,8 @@ body {
 
 @media (hover: none) {
     .rail-btn { display: none; }
+    /* The home grid already shows every game; dots would sit on top of it */
+    .on-welcome .feed-rail { display: none; }
 }
 
 .game-indicators {
@@ -350,5 +593,5 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
     .swipe-hint .chevron { animation: none; }
-    .slide-cover, .play-btn, .rail-btn, .indicator-dot { transition: none; }
+    .slide-cover, .play-btn, .rail-btn, .indicator-dot, .grid-tile img, .toast { transition: none; }
 }
