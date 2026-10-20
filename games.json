@@ -5,14 +5,18 @@
             "folder": "bit-by-bit",
             "entry": "index.html",
             "description": "An unhurried roll-up journey from a first vibration to galaxies and the cosmic web.",
-            "slug": "bit-by-bit"
+            "slug": "bit-by-bit",
+            "icon": "favicon.svg",
+            "color": "#10111b"
         },
         {
             "title": "Escalation",
             "folder": "escalation",
             "entry": "Escalation.html",
             "description": "A game of escalation.",
-            "slug": "escalation"
+            "slug": "escalation",
+            "icon": "Escalation.icon.png",
+            "color": "#000000"
         }
     ]
 }

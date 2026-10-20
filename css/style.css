@@ -3,6 +3,7 @@
 :root {
     --bg-cream: #FAF8F5;
     --bg-warm: #F5F0E8;
+    --bg-night: #10111b;
     --text-dark: #3D3D3D;
     --text-soft: #6B6B6B;
     --accent-coral: #E8A598;
@@ -24,138 +25,56 @@
 html, body {
     height: 100%;
     overflow: hidden;
+    overscroll-behavior: none;
 }
 
 body {
     font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
-    background-color: var(--bg-cream);
+    background-color: var(--bg-night);
     color: var(--text-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Main container */
-.arcade-container {
-    width: 100%;
-    height: 100%;
-    max-width: 1400px;
-    max-height: 900px;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 16px;
-}
-
-/* Header with navigation */
-.game-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: var(--bg-warm);
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 8px var(--shadow-soft);
-}
-
-.game-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    letter-spacing: 0.02em;
-}
-
-/* Navigation arrows */
-.nav-arrow {
-    background: white;
-    border: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px var(--shadow-soft);
-    transition: all var(--transition-smooth);
-    color: var(--text-dark);
-}
-
-.nav-arrow:hover:not(:disabled) {
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px var(--shadow-medium);
-    background: var(--accent-coral);
-    color: white;
-}
-
-.nav-arrow:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.arrow-icon {
-    font-size: 1.4rem;
-    line-height: 1;
-}
-
-/* Game viewport */
-.game-viewport {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 0;
-}
-
-.game-frame {
-    width: 100%;
-    height: 100%;
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 20px var(--shadow-medium);
-    overflow: hidden;
+/* Feed: one full-screen slide per game, snapped like a short-video app */
+.feed {
     position: relative;
-}
-
-.game-frame iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-/* Welcome screen */
-
-
-/* Games occupy the whole browser viewport. */
-.game-active .arcade-container {
-    width: 100%;
+    height: 100vh;
     height: 100dvh;
-    max-width: none;
-    max-height: none;
-    padding: 0;
-    gap: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    outline: none;
 }
-.game-active .game-frame { border-radius: 0; box-shadow: none; }
-.game-active .game-frame iframe { display: block; }
-.game-active .game-header, .game-active .game-footer { display: none; }
-.indicator-dot:focus-visible { outline: 3px solid var(--accent-sky); outline-offset: 3px; }
 
-.welcome-screen {
-    width: 100%;
+.feed::-webkit-scrollbar { display: none; }
+
+/* While a game is being played it owns every touch; the feed stays put */
+.feed.locked { overflow: hidden; }
+
+.slide {
+    position: relative;
     height: 100%;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* Welcome slide */
+.welcome-slide {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--bg-warm) 0%, var(--bg-cream) 100%);
+    background: linear-gradient(160deg, var(--bg-warm) 0%, var(--bg-cream) 100%);
+    text-align: center;
 }
 
 .welcome-content {
-    text-align: center;
-    padding: 40px;
+    padding: 40px 24px;
 }
 
-.welcome-content h2 {
-    font-size: 2.5rem;
+.welcome-content h1 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 12px;
@@ -164,63 +83,93 @@ body {
 .welcome-content p {
     font-size: 1.1rem;
     color: var(--text-soft);
-    margin-bottom: 8px;
 }
 
-.welcome-hint {
-    margin-top: 24px;
-    padding: 12px 24px;
-    background: white;
-    border-radius: 20px;
-    display: inline-block;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 8px var(--shadow-soft);
-}
-
-/* Footer with indicators */
-.game-footer {
-    display: flex;
-    justify-content: center;
-    padding: 12px;
-}
-
-.game-indicators {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.indicator-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text-soft);
-    opacity: 0.3;
-    transition: all var(--transition-smooth);
-    cursor: pointer;
-}
-
-.indicator-dot:hover {
-    opacity: 0.6;
-    transform: scale(1.2);
-}
-
-.indicator-dot.active {
-    opacity: 1;
-    background: var(--accent-coral);
-    transform: scale(1.3);
-}
-
-/* Loading state */
-.game-frame.loading::after {
-    content: '';
+.swipe-hint {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    border: 3px solid var(--bg-warm);
+    left: 0;
+    right: 0;
+    bottom: calc(32px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+}
+
+.swipe-hint .chevron {
+    color: var(--accent-coral);
+    animation: nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes nudge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.hint-pointer { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+    .hint-touch { display: none; }
+    .hint-pointer { display: inline; }
+}
+
+/* Game slides */
+.game-slide {
+    background: var(--slide-bg, var(--bg-night));
+    color: white;
+}
+
+.slide-stage {
+    position: absolute;
+    inset: 0;
+}
+
+.slide-stage iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Cover shown until the live game has loaded underneath */
+.slide-cover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: var(--slide-bg, var(--bg-night));
+    transition: opacity 0.4s ease;
+}
+
+.slide-cover img {
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.cover-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.game-slide.ready .slide-cover {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.game-slide.loading .slide-cover::after {
+    content: '';
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
     border-top-color: var(--accent-coral);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -230,53 +179,176 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Fade transition for game changes */
-.game-frame.fade-out {
-    opacity: 0;
-    transition: opacity 0.2s ease;
+/* Tap layer over the live game: swipes scroll the feed, a tap starts playing */
+.slide-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 35%);
 }
 
-.game-frame.fade-in {
+.playing .slide.active .slide-overlay { display: none; }
+
+.slide-caption {
+    position: absolute;
+    left: calc(18px + env(safe-area-inset-left));
+    right: calc(72px + env(safe-area-inset-right));
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    pointer-events: none;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.slide-caption h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.slide-caption p {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    opacity: 0.88;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* The whole overlay is tappable; this pill is the visible, focusable cue */
+.play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    min-height: 44px;
+    padding: 0 22px 0 18px;
+    border: none;
+    border-radius: 999px;
+    background: var(--accent-coral);
+    color: white;
+    font: 600 1rem/1 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+    text-shadow: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform var(--transition-smooth);
+}
+
+.slide-overlay:hover .play-btn { transform: scale(1.05); }
+
+/* Right-hand rail: position dots, plus arrows on mouse devices */
+.feed-rail {
+    position: fixed;
+    top: 50%;
+    right: calc(12px + env(safe-area-inset-right));
+    transform: translateY(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.playing .feed-rail { display: none; }
+
+.rail-btn {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: all var(--transition-smooth);
+}
+
+.rail-btn:hover:not(:disabled) {
+    transform: scale(1.08);
+    background: var(--accent-coral);
+    color: white;
+}
+
+.rail-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+@media (hover: none) {
+    .rail-btn { display: none; }
+}
+
+.game-indicators {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 7px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.indicator-dot {
+    position: relative;
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.5;
+    transition: all var(--transition-smooth);
+}
+
+/* Larger hit area than the dot itself */
+.indicator-dot::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+}
+
+.indicator-dot:hover { opacity: 0.8; }
+
+.indicator-dot.active {
     opacity: 1;
-    transition: opacity 0.2s ease;
+    background: var(--accent-coral);
+    transform: scale(1.4);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .arcade-container {
-        padding: 12px;
-        gap: 12px;
-    }
-
-    .game-header {
-        padding: 10px 16px;
-    }
-
-    .game-title {
-        font-size: 1.1rem;
-    }
-
-    .nav-arrow {
-        width: 38px;
-        height: 38px;
-    }
-
-    .welcome-content h2 {
-        font-size: 1.8rem;
-    }
+/* Shown only while playing: hands the screen back to the feed */
+.exit-play {
+    display: none;
+    position: fixed;
+    top: 50%;
+    right: max(8px, env(safe-area-inset-right));
+    transform: translateY(-50%);
+    z-index: 3;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    background: rgba(41, 43, 54, 0.82);
+    color: white;
+    font: 600 11px/1 'Segoe UI', sans-serif;
+    cursor: pointer;
 }
 
-@media (max-width: 480px) {
-    .game-title {
-        font-size: 0.95rem;
-    }
+.playing .exit-play { display: flex; }
 
-    .nav-arrow {
-        width: 34px;
-        height: 34px;
-    }
+.rail-btn:focus-visible,
+.indicator-dot:focus-visible,
+.play-btn:focus-visible,
+.exit-play:focus-visible {
+    outline: 3px solid var(--accent-sky);
+    outline-offset: 3px;
+}
 
-    .arrow-icon {
-        font-size: 1.1rem;
-    }
+@media (prefers-reduced-motion: reduce) {
+    .swipe-hint .chevron { animation: none; }
+    .slide-cover, .play-btn, .rail-btn, .indicator-dot { transition: none; }
 }
